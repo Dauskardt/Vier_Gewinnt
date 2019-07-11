@@ -1,0 +1,814 @@
+﻿<Window x:Name="window" x:Class="Vier_Gewinnt.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ViewModel="clr-namespace:Vier_Gewinnt.ViewModel"
+        xmlns:local="clr-namespace:Vier_Gewinnt"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="500" WindowStartupLocation="CenterScreen">
+    <Window.DataContext>
+        <ViewModel:vmMainWindow/>
+    </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{x:Static ViewModel:CloseThisWindowCommand.Instance}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" />
+    </Window.InputBindings>
+    <Window.Resources>
+        <Style x:Key="StyleMenue" TargetType="{x:Type Menu}">
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="Black"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="White"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!--<Style x:Key="StyleContentControl" TargetType="{x:Type ContentControl}">
+            -->
+        <!--<Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="Black"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <SolidColorBrush Color="Transparent"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <SolidColorBrush Color="Blue"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness">
+                <Setter.Value>
+                    5
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding">
+                <Setter.Value>
+                    0
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Margin">
+                <Setter.Value>
+                    0
+                </Setter.Value>
+            </Setter>
+            <Setter Property="HorizontalContentAlignment">
+                <Setter.Value>
+                    Center
+                </Setter.Value>
+            </Setter>
+            <Setter Property="VerticalContentAlignment">
+                <Setter.Value>
+                    Center
+                </Setter.Value>
+            </Setter>-->
+        <!--<Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContentControl">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" >
+                            <ContentPresenter
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            Cursor="{TemplateBinding Cursor}"
+            Margin="{TemplateBinding Padding}"
+            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>-->
+        <!--
+        </Style>-->
+        <ViewModel:MultiDimensionalConverter x:Key="MultiDimensionalConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" Style="{StaticResource StyleMenue}" TextOptions.TextFormattingMode="Ideal">
+            <MenuItem Header="_Datei">
+                <MenuItem Header="_Neues Spiel.."  Command="{Binding ACSpielStart}"  CommandParameter="{Binding ElementName=window, Mode=OneWay}">
+                    <!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/cross.png" />
+                    </MenuItem.Icon>-->
+                </MenuItem>
+                <!--<Separator/>
+                <MenuItem Header="Spiel _speichern" Command="{Binding ACCloseSourceFile}">
+                    --><!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/cross.png" />
+                    </MenuItem.Icon>--><!--
+                </MenuItem>
+                <MenuItem Header="Spiel _laden" Command="{Binding ACCloseSourceFile}">
+                    --><!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/cross.png" />
+                    </MenuItem.Icon>--><!--
+                </MenuItem>-->
+                <Separator/>
+                <MenuItem Header="Spiel _beenden" x:Name="mi_Programmende"  Command="{Binding ACBeenden}">
+                    <!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/door_out.png" />
+                    </MenuItem.Icon>-->
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Optionen">
+                <MenuItem Header="_Einstellungen">
+                    <!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/wrench_orange.png"/>
+                    </MenuItem.Icon>-->
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Info">
+                <MenuItem Header="_Über" Command="{Binding ACInfo}"  CommandParameter="{Binding ElementName=window, Mode=OneWay}">
+                    <!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/information.png" />
+                    </MenuItem.Icon>-->
+                </MenuItem>
+                <MenuItem Header="_Hilfe" Command="{Binding ACHelp}"  CommandParameter="{Binding ElementName=window, Mode=OneWay}">
+                    <!--<MenuItem.Icon>
+                        <Image Source="/GVPDXTool;component/Resources/help.png" />
+                    </MenuItem.Icon>-->
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <Viewbox Grid.Row="1">
+            <Border  Padding="5" Background="{Binding ColorRaster}" Margin="10" CornerRadius="20">
+                <Border.Effect>
+                    <DropShadowEffect Direction="230" Opacity="0.5" BlurRadius="10"/>
+                </Border.Effect>
+                <Grid x:Name="Spielfeld" Width="500" Height="500" Margin="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ContentControl x:Name="EW0" Grid.Column="0" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW1" Grid.Column="1" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW2" Grid.Column="2" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW3" Grid.Column="3" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW4" Grid.Column="4" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW5" Grid.Column="5" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="EW6" Grid.Column="6" IsEnabled="{Binding InputLock}">
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="FelderEinwurf"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+
+                    <ContentControl x:Name="F00" Grid.Column="0" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F10" Grid.Column="1" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F20" Grid.Column="2" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F30" Grid.Column="3" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F40" Grid.Column="4" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F50" Grid.Column="5" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F60" Grid.Column="6" Grid.Row="1" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">0</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F01" Grid.Column="0" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F11" Grid.Column="1" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F21" Grid.Column="2" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F31" Grid.Column="3" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F41" Grid.Column="4" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F51" Grid.Column="5" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F61" Grid.Column="6" Grid.Row="2" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">1</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F02" Grid.Column="0" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F12" Grid.Column="1" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F22" Grid.Column="2" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F32" Grid.Column="3" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F42" Grid.Column="4" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F52" Grid.Column="5" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F62" Grid.Column="6" Grid.Row="3" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">2</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F03" Grid.Column="0" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F13" Grid.Column="1" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F23" Grid.Column="2" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F33" Grid.Column="3" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F43" Grid.Column="4" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F53" Grid.Column="5" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F63" Grid.Column="6" Grid.Row="4" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">3</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F04" Grid.Column="0" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F14" Grid.Column="1" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F24" Grid.Column="2" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F34" Grid.Column="3" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F44" Grid.Column="4" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F54" Grid.Column="5" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F64" Grid.Column="6" Grid.Row="5" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">4</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F05" Grid.Column="0" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">0</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F15" Grid.Column="1" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">1</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F25" Grid.Column="2" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">2</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F35" Grid.Column="3" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">3</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F45" Grid.Column="4" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">4</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F55" Grid.Column="5" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">5</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="F65" Grid.Column="6" Grid.Row="6" >
+                        <ContentControl.Resources>
+                            <system:Int32 x:Key="0">6</system:Int32>
+                            <system:Int32 x:Key="1">5</system:Int32>
+                        </ContentControl.Resources>
+                        <ContentControl.Content>
+                            <MultiBinding Converter="{StaticResource MultiDimensionalConverter}">
+                                <Binding Path="Felder"/>
+                                <Binding Source="{StaticResource 0}"/>
+                                <Binding Source="{StaticResource 1}"/>
+                            </MultiBinding>
+                        </ContentControl.Content>
+                    </ContentControl>
+                </Grid>
+            </Border>
+        </Viewbox>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem Content="Spiel-Zeit (Sekunden) "/>
+            <StatusBarItem Content="{Binding SpielSekunden}"/>
+        </StatusBar>
+    </Grid>
+
+
+</Window>
